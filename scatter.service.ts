@@ -1,4 +1,5 @@
-import { Promise,IPromise } 
+import ScatterJS from 'scatter-js/dist/scatter.esm'
+import { Promise,IPromise }
     from "eosbingo-common/util/promise";
 
 
@@ -40,39 +41,15 @@ export class ScatterService
     private eosAccount:IEosAccount;
 
     constructor() {
-        document.addEventListener('scatterLoaded',this.onScatterLoaded);
+        ScatterJS.scatter.connect("EOS-Bingo").then(connected => {
+            if(!connected) return;
+
+            this._hasScatter = true;
+            this.scatter = ScatterJS.scatter;
+            window['scatter'] = null;
+        });
 
         this.checkForScatter();
-    }
-    private onScatterLoaded = (scatterExtension) =>
-    {
-        this.checkForScatter();
-        
-
-        //console.log(scatter);
-        //console.log(scatterExtension);
-
-
-        // requiring a minimum version:
-        //scatter.requireVersion(8.0);
-    }
-    private checkForScatter() {
-        if ( !window['scatter'] )
-            return;
-
-        
-        this._hasScatter = true;
-
-
-        //console.log('onScatterLoaded');
-
-
-        // Scatter will now be available from the window scope.
-        // At this stage your app's connection to the Scatter web extension is encrypted
-        // and ready for use.
-        this.scatter = window['scatter'];
-
-        window['scatter'] = null;
     }
 
     login():IPromise<string> {
